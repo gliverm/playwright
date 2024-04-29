@@ -1,0 +1,86 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "gevent": true
+        },
+        {
+            "name": "Locust: 1 user debug headless",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "locust",
+            "args": [
+                "-f",
+                "${file}",
+                "--headless",
+                "--users",
+                "1"
+            ],
+            "console": "integratedTerminal",
+            "gevent": true
+        },
+        {
+            "name": "Locust: 1 user debug",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "locust",
+            "args": [
+                "-f",
+                "${file}",
+                "--users",
+                "1",
+                "--stop-timeout",
+                "600"
+            ],
+            "console": "integratedTerminal",
+            "gevent": true
+        },
+        {
+            "name": "pure requests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "locustfiles/lib/smxrequests.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}/",
+            }
+        },
+        {
+            "name": "Script: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}/",
+            }
+        },
+        {
+            "name": "Script: Dict2Yaml",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                // "--help",
+                "locustfiles/helpers/GaylesSandbox_setup_config.py",
+                // "GaylesSandbox_setup_config.py",
+                "locustfiles/helpers/GaylesSandbox_setup_config.yaml",
+            ],
+            "env": {
+                "PYTHONPATH": "${PYTHONPATH}:${workspaceFolder}/",
+            }
+        },
+    ]
+}
