@@ -1,0 +1,16 @@
+# Deivce file example
+# Use this file as a temmplate changing what is needed to 
+# match your environment.  
+# All recommended changes are marked with <...>
+
+devices: 
+    <smxrefname>:        # Device name used to reference the SMx params - change this
+        type: 'smx'         # Device type - do not change
+        connections:
+            rest:
+                type: 'rest'            # Connection type - do not change
+                host: <fqdn>            # Hostname or IP address of the SMx instance
+                username: <username>    # Username to use for the connection
+                password: <password>    # Password to use for the connection
+                apiport: 18443          # Port to use for the connection
+                apiroot: "/rest/v1"     # API root path - do not change

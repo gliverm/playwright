@@ -1,0 +1,322 @@
+# Here are some things to think about: 
+#  -  all config values may reside in same file  
+#  -  scripts executed simultaneously in same locust instance must have config in same file
+#  -  # users per script controlled in combination of: unique data per user type and 
+#       total user count spawned (or the Locust -u parameter)
+#  -  To deterministically control the number of users of a specific type, then the 
+#  -    total user count spawned == total unique user data
+#  -  The total user count spawned is internally limited to unique user data for scripts
+#        that are ephemeral and have ideally no impact if multiple users use the same data
+
+
+# ----- Locust Global Configuration Parameters
+network_timeout: 60.0               # Dflt 60.0 seconds (max 120) : DNS resolution, TCP connection, TLS handshake, server processing
+connection_timeout: 60.0            # Dflt 60.0 seconds (max 120) : Waiting for response, downloading response
+wait_time_between: [4,4]            # Dflt [0,0] : Random time in seconds between tasks
+rest_delay_time_between: [5,5]      # Dflt [0,0]: Random time between multi REST calls with a task
+group_requests: False               # Dflt True : Group requests by device (E9)
+log_tracked_failed_responses: True  # Dflt False : Log tracked failed response text
+skip_cleanup: False                 # Dflt False : Skip cleanup of created data
+cleanup_ramp_down: 60               # Dflt 10 seconds : Ramp down time wait until cleanup start
+cleanup_time_between: [2, 2]        # Dflt [0,0] : Random time in seconds between cleanup REST calls
+
+
+# ----- Common Data Shared by Scripts  
+# smx_name: smx04                      # SMx name in config/devices.yaml
+# smx_name: scale_134 # Subbu and Naresh systems
+smx_name: scale_636 # Utkarsh
+#device_name: "gayles-sandbox"         # Globally used E9 OLT device name (being phased out)
+
+
+# ----- L3One2OneServiceUser Unique Data -----
+#  -  1 ont_id = 1 user
+#  -  prerequisite: vlans and service templates must exist
+#  -  all ONTs have one data and one voice service
+#  -  Examples below only - user should populate as needed for use-case
+l3_one2one_service_data:
+  onts:
+    force_delete: "false"
+    defaults:
+      profile_id: 803G
+      vendor_id: CXNK
+      data_service:
+        vlan: 601
+        service_name: "LocustBNGDataService"
+        ont_port_id: "g1"
+      voice_service:
+        vlan: 602
+        service_name: "LocustBNGVoiceService"
+        ont_port_id: "p1"
+        password: "123456"
+    ont_config:
+      - ont_id: E9_20701
+        serial_number: 2AC469
+        data_service: 
+          c_vlan: 101
+        voice_service:
+          c_vlan: 201
+          user: "5055034455"
+          uri: "5055034455" 
+      - ont_id: E9_20702
+        serial_number: 2BD527
+        data_service: 
+          c_vlan: 102
+        voice_service:
+          c_vlan: 202
+          user: "9512623062"
+          uri: "9512623062" 
+      - ont_id: E9_20703
+        serial_number: 2BD528
+        profile_id: 803G
+        data_service:
+          c_vlan: 103 
+        voice_service:
+          c_vlan: 203
+          user: "7192662837"
+          uri: "7192662837" 
+
+
+# ----- OntL2tpDataServiceCdUser Unique Data -----
+#  -  1 ont_id = 1 user
+#  -  Each user can operate on a unique device ONT
+#  -  prerequisite: vlans and service templates must exist
+#  -  all ONTs have one data service
+#  -  Examples below only - user should populate as needed for use-case
+#  -  Note that netconf on E9 is single threaded and can only handle one request at a time
+#       keep the number of users per single E9 low.  Each user needs 9 seconds to complete
+#       and therefor 5 users would have a response wait time up to 45 seconds.
+ont_l3121_data_service_data:
+  locust_user_configuration:  # These values override the global configuration values for this user type
+    wait_time_between: [30,30]  # Random time in seconds between tasks
+    rest_delay_time_between: [30,30]  # Random time between multi REST calls with a task
+    # ----- Locust Global Configuration Parameters used for last soak test
+    # network_timeout: 60.0               # Dflt 60.0 seconds (max 120) : DNS resolution, TCP connection, TLS handshake, server processing
+    # connection_timeout: 60.0            # Dflt 60.0 seconds (max 120) : Waiting for response, downloading response
+    # wait_time_between: [10,10]            # Dflt [0,0] : Random time in seconds between tasks
+    # rest_delay_time_between: [5,5]      # Dflt [0,0]: Random time between multi REST calls with a task
+    # group_requests: False               # Dflt True : Group requests by device (E9)
+    # log_tracked_failed_responses: True  # Dflt False : Log tracked failed response text
+    # skip_cleanup: False                 # Dflt False : Skip cleanup of created data
+    # cleanup_ramp_down: 60               # Dflt 10 seconds : Ramp down time wait until cleanup start
+    # cleanup_time_between: [2, 2]        # Dflt [0,0] : Random time in seconds between cleanup REST calls
+  onts:
+    force_delete: "false"
+    defaults:
+      device_name: "Richardson_scale"
+      data_service:
+        vlan: 666
+        service_name: "LocustBNGDataService"
+    ont_config:
+      - ont_id: RS-GL-CXNK002B714B
+        subscriber_id: RS-GL-CXNK002B714B
+        data_service: 
+          ont_port_id: "g1"
+          c_vlan: 106
+      # - ont_id: RS-GL-CXNK002B7148
+      #   subscriber_id: RS-GL-CXNK002B7148
+      #   data_service: 
+      #     ont_port_id: "g1"
+      #     c_vlan: 107
+
+
+# ----- OntL2tpDataServiceCdUser Unique Data -----
+#  -  1 ont_id = 1 user
+#  -  Each user can operate on a unique device ONT
+#  -  prerequisite: vlans and service templates must exist
+#  -  all ONTs have one data service
+#  -  Examples below only - user should populate as needed for use-case
+#  -  Note that netconf on E9 is single threaded and can only handle one request at a time
+#       keep the number of users per single E9 low.  Each user needs 9 seconds to complete
+#       and therefor 5 users would have a response wait time up to 45 seconds.
+ont_l2tp_data_service_data:
+  onts:
+    force_delete: "false"
+    defaults:
+      device_name: "Richardson_scale"
+      data_service:
+        vlan: 200
+        service_name: "data_untagged"
+    ont_config:
+      # - ont_id: RS-GL-CXNK003B584B
+      #   subscriber_id: RS-GL-CXNK003B584B
+      #   data_service: 
+      #     ont_port_id: "F1"
+      - ont_id: RS-GL-CXNK003B584C
+        subscriber_id: RS-GL-CXNK003B584C
+        data_service: 
+          ont_port_id: "F1"
+      - ont_id: RS-GL-CXNK003B5868
+        subscriber_id: RS-GL-CXNK003B5868
+        data_service: 
+          ont_port_id: "F1"
+      - ont_id: RS-GL-CXNK003B5877
+        subscriber_id: RS-GL-CXNK003B5877
+        data_service: 
+          ont_port_id: "F1"
+      # - ont_id: RS-GL-CXNK0018712F
+      #   subscriber_id: RS-GL-CXNK0018712F
+      #   data_service: 
+      #     ont_port_id: "F1"
+      # - ont_id: RS-GL-CXNK002B714B
+      #   subscriber_id: RS-GL-CXNK002B714B
+      #   data_service: 
+      #     ont_port_id: "g1"
+      # - ont_id: RS-GL-CXNK002B7148
+      #   subscriber_id: RS-GL-CXNK002B7148
+      #   data_service: 
+      #     ont_port_id: "g1"
+
+
+# ----- VLANCrudUser Unique Data -----
+#  -  1 vlan_id = 1 user
+#  -  script operates on same device for all VLANs TODO change this to allow for uniqueness
+#  -  Examples below only - user should populate as needed for use-case
+vlan_crud_data:
+  vlan_ids: 
+    # Can be a single or list of any combination of the following:
+    #  integer, list, range, or range with step
+    # Define range using : 
+    #   range: [<start>, <stop>, <step>] where step is optional
+    #   range acts like python where stop is not included
+    - [100, 101]
+    # - [120, 130]
+    # - range: [701, 731]
+    # - range: [3001, 3011, 2]
+
+
+# ----- OntCrudUser Unique Data -----
+#  -  1 ont_id = 1 user
+#  -  script operates on same device TODO change this to allow for uniqueness
+#  -  Examples below only - user should populate as needed for use-case
+ont_crud_data: 
+  onts:
+    force_delete: "false"
+    defaults:
+      profile_id: 801G
+      vendor_id: CXNK
+    ont_config:
+      - ont_id: E9_20801
+        profile_id: 801G
+        serial_number: 2AC469
+      - ont_id: E9_20802
+        profile_id: 813G
+        serial_number: 2BD527
+      # - ont_id: E9_20803
+      #   serial_number: 2BD49C
+      # - ont_id: E9_20804
+      #   serial_number: 2BD4A1
+      # - ont_id: E9_20805
+      #   profile_id: 813G
+      #   serial_number: 298ED1
+      # - ont_id: E9_20706
+      #   profile_id: 813G
+      #   serial_number: '298658'
+      # - ont_id: E9_20707
+      #   profile_id: 813G
+      #   serial_number: 298ED0
+      # - ont_id: E9_20708
+      #   profile_id: 813G
+      #   serial_number: 298F24
+      # - ont_id: E9_42431
+      #   profile_id: 836GE
+      #   serial_number: 168AF2
+      # - ont_id: E9_42430
+      #   profile_id: 836GE
+      #   serial_number: 168AFA
+
+
+# ----- CoxFetchUser Unique Data -----
+#  -  Data executed with unique data per user, shared via randomizing, 
+#  -  Examples below only - user should populate as needed for use-case
+
+# User count Option: 1 device name in device_name_pool = 1 user of type CoxFetchUser
+#                    up to fixed_user_count.  Fixed user count is more important when
+#                    mixing the CoxFetchUser with other user types in an execution.
+
+# User count Option: current synced device count = users of type CoxFetchUser
+#                    takes precedence over listed device names.  Fixed user count 
+#                    is more important when mixing the CoxFetchUser with other user
+#                    types in an execution.
+
+# User count Option: random device name to maximize users of type CoxFetchUser
+#                    each user will be associated with fetching info from a 
+#                    random device from pool of synced devices.  Device pool
+#                    is either defined by a list or all target SMx devices.
+#                    Fixed_user_count is more important when mixing the
+#                    CoxFetchUser with other user types in an execution.
+cox_fetch_data:
+  fixed_max_user_count: 25         # Dflt 0 : Max users of type CoxFetchUser (0 = no limit)
+  random_device: True            # Dflt False : Random device name to fixed max user count of type CoxFetchUser
+  all_synced_devices_pool: True  # Dflt False : Use all synced devices at startup
+  # device_name_pool:               # Dflt []: List of one or more OLTs to fetch ONT data
+  #   # -  "E9_Utkarsh"               # List from community testing R24.1
+  #   -  "CVIL_E9"
+  #   -  "Richardson_scale"
+  #   -  "CF-Allo_scale"
+  #   -  "BR_E9"
+  #   -  "CF_Sudhakar"
+  #   -  "CDC_53.201"
+  #  device_name_pool:               # List from community testing R23.1
+  #   -  "Utkarsh_E9"
+  #   -  "WWZ_E9_SolnTest"
+  #   -  "Leah_OOB"
+  #   -  "Richardson_scale"
+  #   -  "City_fiber_scale"
+  #   -  "hazel-CDC"
+  #   -  "E9_R3"
+  #   -  "E9_LR1"
+  # device_name_pool:               # Dflt []: List of one or more OLTs to fetch ONT data
+  #   -  "Utkarsh_E9"
+  #   -  "CF-Anaheim2"
+  #   -  "Leah_OOB"
+  #   -  "E9-2-Sys087-CF"
+  #   #-  "Small_scale"
+  #   -  "Hazel_E9"
+  #   -  "Richardson_scale"
+  # device_name_pool:               # Dflt []: List of one or more OLTs to fetch ONT data
+  #   -  "E3-2-068-Cox-L2-L3"
+  # device_name_pool:               # Dflt []: List of one or more OLTs to fetch ONT data
+  #   -  "E9"
+  #   -  "Richardson_scale"
+  #   -  "City_Fiber_scale"
+  # device_name_pool:               # Dflt []: List of one or more OLTs to fetch ONT data
+  #   -  "sb001-smx-kvm5"
+  #   -  "sb002-smx-kvm5"
+  #   -  "sb003-smx-kvm5"
+  #   -  "sb004-smx-kvm5"
+  #   -  "sb005-smx-kvm5"
+  #   -  "sb006-smx-kvm5"
+  #   -  "sb007-smx-kvm5"
+  #   -  "sb008-smx-kvm5"
+  #   -  "sb009-smx-kvm5"
+  #   -  "sb010-smx-kvm5"
+  #   -  "sb011-smx-kvm5"
+  #   -  "sb012-smx-kvm5" 
+  #   -  "sb013-smx-kvm5"
+  #   -  "sb014-smx-kvm5"
+  #   -  "sb015-smx-kvm5"
+  #   -  "sb016-smx-kvm5"
+  #   -  "sb017-smx-kvm5"
+  #   -  "sb018-smx-kvm5"
+  #   -  "sb019-smx-kvm5"
+  #   -  "sb020-smx-kvm5"
+  #   -  "sb021-smx-kvm5"
+  #   -  "sb022-smx-kvm5" 
+  #   -  "sb023-smx-kvm5"
+  #   -  "sb024-smx-kvm5"
+  #   -  "sb025-smx-kvm5"
+  #   -  "sb026-smx-kvm5"
+  #   -  "sb027-smx-kvm5"
+  #   -  "sb028-smx-kvm5"
+  #   -  "sb029-smx-kvm5"
+  #   -  "sb030-smx-kvm5"
+  #   -  "sb031-smx-kvm5"
+  #   -  "sb032-smx-kvm5" 
+  #   -  "sb033-smx-kvm5"
+  #   -  "sb034-smx-kvm5"
+  #   -  "sb035-smx-kvm5"
+  #   -  "sb036-smx-kvm5"
+  #   -  "sb037-smx-kvm5"
+  #   -  "sb038-smx-kvm5"
+  #   -  "sb039-smx-kvm5"
+  #   -  "sb040-smx-kvm5"
